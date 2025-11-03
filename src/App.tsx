@@ -1,646 +1,383 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { RoboticBackground } from "./components/RoboticBackground";
-import { RoboticNav } from "./components/RoboticNav";
-import { GlitchText } from "./components/GlitchText";
-import { HexagonCard } from "./components/HexagonCard";
-import { Badge } from "./components/ui/badge";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
-import { 
-  Terminal, 
-  Code2, 
-  Database, 
-  Cloud, 
-  Mail, 
-  Phone,
-  MapPin,
-  ExternalLink,
-  Github,
-  Linkedin,
-  ChevronRight,
-  Cpu,
-  Zap,
-  Shield,
-  Layers
-} from "lucide-react";
+import React from "react";
+
+type InfoRow = {
+  label: string;
+  value: React.ReactNode;
+  alignTop?: boolean;
+};
+
+const galleryImages = [
+  "https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1527169402691-feff5539e52c?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1524230572899-a752b3835840?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1457269449834-928af64c684d?auto=format&fit=crop&w=600&q=80",
+];
+
+const staffMembers = [
+  {
+    name: "りさ",
+    role: "ママ",
+    image:
+      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=200&q=80",
+  },
+  {
+    name: "あや",
+    role: "キャスト",
+    image:
+      "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?auto=format&fit=crop&w=200&q=80",
+  },
+  {
+    name: "さゆり",
+    role: "キャスト",
+    image:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+  },
+];
+
+const actionButtons = [
+  { label: "行きたい", primary: true },
+  { label: "電話する" },
+  { label: "口コミを書く" },
+  { label: "公式サイトを見る" },
+];
+
+const basicInfo: InfoRow[] = [
+  { label: "店名", value: "ステラグ 05" },
+  { label: "住所", value: "東京都港区赤坂3-10-6 赤坂ステラタワー 5F" },
+  { label: "アクセス", value: "赤坂駅 1番出口 徒歩3分 / 溜池山王駅 徒歩6分" },
+  { label: "営業時間", value: "19:00〜翌2:00" },
+  { label: "定休日", value: "日曜・祝日" },
+  { label: "席数", value: "カウンター8席 / テーブル6卓 (最大45名)" },
+  {
+    label: "電話番号",
+    value: (
+      <a
+        href="tel:0334567890"
+        className="inline-flex items-center gap-2 rounded-full border border-[#cde6c8] bg-[#eef8ec] px-3 py-1 text-sm font-medium text-[#1f7a3f]"
+      >
+        <span className="size-2 rounded-full bg-[#1f7a3f]" />
+        03-3456-7890
+      </a>
+    ),
+  },
+  {
+    label: "内観",
+    value: (
+      <div className="flex h-40 w-full items-center justify-center rounded-2xl border border-dashed border-[#c6d7c5] bg-[#f5f9f2] text-xs tracking-[0.4em] text-[#9cb2a0]">
+        IMAGE PLACEHOLDER
+      </div>
+    ),
+    alignTop: true,
+  },
+  {
+    label: "備考",
+    value: "貸切ご相談ください / Wi-Fi完備 / カラオケあり",
+  },
+];
+
+const facilityInfo: InfoRow[] = [
+  {
+    label: "料金システム",
+    value: (
+      <ul className="space-y-1 text-sm text-[#263a2c]">
+        <li>セット料金 60分 4,000円 (税・サ別)</li>
+        <li>延長 30分 2,000円 / 延長 60分 3,000円</li>
+        <li>カラオケ歌い放題 +1,000円</li>
+      </ul>
+    ),
+    alignTop: true,
+  },
+  { label: "サービス料", value: "20% / カード手数料 5%" },
+  {
+    label: "設備",
+    value: "カラオケ / モニター / Free Wi-Fi / 空気清浄機",
+  },
+  {
+    label: "支払方法",
+    value: "現金 / 各種クレジットカード / QR決済",
+  },
+];
+
+const recruitInfo: InfoRow[] = [
+  {
+    label: "募集職種",
+    value: "フロアレディ / カウンタースタッフ",
+  },
+  {
+    label: "勤務時間",
+    value: "19:00〜翌2:00 (1日3h〜OK) / 週2日から応相談",
+  },
+  {
+    label: "待遇",
+    value: (
+      <ul className="space-y-1 text-sm text-[#263a2c]">
+        <li>日払い可 / ドレス・送り無料</li>
+        <li>ノルマなし / 各種バックあり / 体験入店歓迎</li>
+      </ul>
+    ),
+    alignTop: true,
+  },
+  {
+    label: "応募方法",
+    value: "公式LINE または お電話にて 24時間受付",
+  },
+];
+
+const dataHighlights = [
+  {
+    tag: "DATA 01",
+    title: "常連比率 72%",
+    description: "平日はビジネス層、週末はカップル利用が多数。落ち着いた雰囲気で初めての方も安心。",
+  },
+  {
+    tag: "DATA 02",
+    title: "平均予算 6,800円",
+    description: "チャージ込みで分かりやすい価格設定。ボトルキープでさらにお得に楽しめます。",
+  },
+  {
+    tag: "DATA 03",
+    title: "口コミ評価 3.5/5",
+    description: "接客・雰囲気が高評価。カラオケ設備の充実度もリピーターに人気です。",
+  },
+];
+
+const coupons = [
+  {
+    title: "初回セット 60分 2,500円",
+    description: "初めてご来店の方限定。飲み放題・カラオケ付きでお得に体験いただけます。",
+    code: "STELLA-01",
+    expiry: "2025.12.31",
+  },
+  {
+    title: "ボトルキープ 10% OFF",
+    description: "事前予約またはご紹介のお客様限定。人気銘柄も対象、当日カラオケ無料サービス。",
+    code: "STELLA-BTL",
+    expiry: "2025.09.30",
+  },
+];
 
 export default function App() {
-  const [timeDisplay, setTimeDisplay] = useState("");
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setTimeDisplay(
-        `${now.getHours().toString().padStart(2, "0")}:${now
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`
-      );
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const skills = {
-    languages: ["JavaScript", "TypeScript", "Python", "C++"],
-    web: ["React", "NextJS", "Redux", "HTML", "CSS", "Tailwind"],
-    tools: ["Git", "GitHub", "VS Code", "NPM", "Webpack", "Postman"],
-    other: ["Node.js", "MongoDB", "Supabase", "RESTful APIs", "UI/UX Design", "Responsive Design"]
-  };
-
-  const projects = [
-    {
-      title: "Household Services Platform",
-      description: "A full-stack web application built with React.js and MongoDB, connecting customers with local service vendors for various household needs. Features vendor dashboard, customer portal, real-time booking, service categories (laundry, cleaning, plumbing), location-based search, and reviews and ratings system.",
-      tech: ["React", "MongoDB", "Node.js"],
-      status: "Completed"
-    },
-    {
-      title: "Dynamic POS System",
-      description: "A flexible and scalable Point-of-Sale system built with Node.js and Supabase, designed to cater to diverse business needs. Features customizable modules, multi-user support, real-time inventory tracking, dynamic pricing, sales analytics, and modular design for easy feature management.",
-      tech: ["Node.js", "Supabase", "React"],
-      status: "Completed"
-    },
-    {
-      title: "AI Assistant",
-      description: "Cutting-edge AI assistant capable of handling basic queries and tasks with seamless user experience through intuitive design.",
-      tech: ["Python", "AI/ML", "React"],
-      status: "Ongoing"
-    }
-  ];
-
   return (
-    <div className="min-h-screen text-white overflow-hidden">
-      <RoboticBackground />
-      <RoboticNav />
-
-      {/* Hero Section */}
-      <section id="hero" className="min-h-screen flex items-center justify-center px-4 relative">
-        <div className="max-w-7xl mx-auto w-full py-20">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="text-center"
-          >
-            {/* System Status */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-8 flex items-center justify-center gap-4 font-mono text-sm"
-            >
-              <span className="text-cyan-400">SYSTEM STATUS:</span>
-              <span className="text-green-400 flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                ONLINE
-              </span>
-              <span className="text-cyan-400">|</span>
-              <span className="text-cyan-400">{timeDisplay}</span>
-            </motion.div>
-
-            {/* Main Title */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className="mb-4"
-            >
-              <h1 className="text-6xl md:text-8xl font-mono mb-2 bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                <GlitchText text="MUHAMMAD ANAS" />
-              </h1>
-            </motion.div>
-
-            {/* Subtitle */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="mb-8"
-            >
-              <div className="font-mono text-xl md:text-2xl text-cyan-400 mb-6">
-                {'>'} Developer.exe
+    <div className="min-h-screen bg-[#f4f6f0] px-4 py-12">
+      <div className="mx-auto max-w-5xl overflow-hidden rounded-[36px] border border-[#e0e8dc] bg-white shadow-[0_24px_80px_rgba(20,40,28,0.12)]">
+        <div className="space-y-12 p-10 lg:p-12">
+          <section className="flex flex-col gap-10 lg:flex-row">
+            <div className="w-full space-y-6 lg:max-w-sm">
+              <div className="space-y-3">
+                <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.45em] text-[#8fa191]">
+                  SNACK GUIDE
+                </span>
+                <h1 className="text-3xl font-semibold tracking-tight text-[#1b3123]">ステラグ 05</h1>
+                <p className="text-sm leading-relaxed text-[#5f7060]">
+                  東京都港区赤坂3-10-6 赤坂ステラタワー 5F / 赤坂見附駅より徒歩3分
+                </p>
               </div>
-              <div className="flex flex-wrap justify-center gap-2 mb-6">
-                <Badge className="bg-cyan-500/20 border-cyan-500/50 text-cyan-400 font-mono">
-                  <Terminal className="w-3 h-3 mr-1" />
-                  Full Stack Developer
-                </Badge>
-              </div>
-            </motion.div>
 
-            {/* Terminal Window */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
-              className="max-w-3xl mx-auto"
-            >
-              <div className="bg-slate-900/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg overflow-hidden">
-                {/* Terminal Header */}
-                <div className="bg-slate-800/50 border-b border-cyan-500/30 px-4 py-2 flex items-center justify-between">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
-                  </div>
-                  <span className="font-mono text-xs text-cyan-400">terminal@anas:~</span>
-                </div>
-
-                {/* Terminal Content */}
-                <div className="p-6 font-mono text-sm text-left space-y-2">
-                  <TerminalLine delay={1.2}>$ whoami</TerminalLine>
-                  <TerminalLine delay={1.4} isOutput>
-                    Full Stack Developer with expertise in building modern web applications.
-                  </TerminalLine>
-                  <TerminalLine delay={1.6} isOutput>
-                    Specialized in React, Node.js, and database management.
-                  </TerminalLine>
-                  <TerminalLine delay={1.8} isOutput>
-                    Passionate about creating scalable solutions and seamless user experiences.
-                  </TerminalLine>
-                  <TerminalLine delay={2}>$ cat skills.json</TerminalLine>
-                  <TerminalLine delay={2.2} isOutput>
-                    {`{ "frontend": ["React", "NextJS", "Redux"], "backend": ["Node.js", "MongoDB", "Supabase"] }`}
-                  </TerminalLine>
-                  <TerminalLine delay={2.4}>
-                    <span className="text-green-400">✓</span> System initialized | Ready for deployment
-                  </TerminalLine>
-                  <TerminalLine delay={2.6}>
-                    <span className="text-cyan-400">{'>'}</span> <span className="animate-pulse">_</span>
-                  </TerminalLine>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* CTA */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.8 }}
-              className="mt-8 flex flex-wrap justify-center gap-4"
-            >
-              <Button
-                className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-mono group"
-                onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                VIEW_PROJECTS
-                <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                variant="outline"
-                className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 font-mono"
-                onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                INITIALIZE_CONTACT
-              </Button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="min-h-screen flex items-center justify-center px-4 py-20">
-        <div className="max-w-7xl mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <h2 className="text-4xl md:text-6xl font-mono mb-4 text-cyan-400">
-              {'<'} PROFILE_DATA {'>'}
-            </h2>
-            <div className="h-1 w-32 bg-gradient-to-r from-cyan-500 to-transparent" />
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Education & Contact */}
-            <div className="space-y-6">
-              <HexagonCard delay={0.2}>
-                <h3 className="font-mono text-xl text-cyan-400 mb-4 flex items-center gap-2">
-                  <Terminal className="w-5 h-5" />
-                  CONTACT_INFO
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-sm">
-                    <Phone className="w-4 h-4 text-cyan-400" />
-                    <span className="font-mono">03366768725</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Mail className="w-4 h-4 text-cyan-400" />
-                    <span className="font-mono">balochanas321@gmail.com</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <MapPin className="w-4 h-4 text-cyan-400" />
-                    <span className="font-mono">Islamabad, Pakistan</span>
-                  </div>
-                </div>
-              </HexagonCard>
-
-              <HexagonCard delay={0.3}>
-                <h3 className="font-mono text-xl text-cyan-400 mb-4 flex items-center gap-2">
-                  <Database className="w-5 h-5" />
-                  EDUCATION_LOGS
-                </h3>
-                <div className="space-y-4">
-                  <div className="border-l-2 border-cyan-500/50 pl-4">
-                    <div className="font-mono text-sm text-cyan-400 mb-1">2024 - Present</div>
-                    <div className="font-semibold">BS in Information Technology</div>
-                    <div className="text-sm text-slate-400">Air University Islamabad</div>
-                  </div>
-                  <div className="border-l-2 border-cyan-500/30 pl-4">
-                    <div className="font-mono text-sm text-cyan-400 mb-1">2021 - 2023</div>
-                    <div className="font-semibold">HSSC (Pre-Engineering)</div>
-                    <div className="text-sm text-slate-400">Punjab Group of Colleges</div>
-                  </div>
-                </div>
-              </HexagonCard>
-
-              <HexagonCard delay={0.4}>
-                <h3 className="font-mono text-xl text-cyan-400 mb-4 flex items-center gap-2">
-                  <Shield className="w-5 h-5" />
-                  DOMAIN_EXPERTISE
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1 h-1 bg-cyan-400 rounded-full" />
-                    <span>Frontend Development</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1 h-1 bg-cyan-400 rounded-full" />
-                    <span>Backend Development</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1 h-1 bg-cyan-400 rounded-full" />
-                    <span>Full Stack Development</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1 h-1 bg-cyan-400 rounded-full" />
-                    <span>App Development</span>
-                  </div>
-                </div>
-              </HexagonCard>
-            </div>
-
-            {/* Stats */}
-            <div className="space-y-6">
-              <HexagonCard delay={0.5}>
-                <h3 className="font-mono text-xl text-cyan-400 mb-4 flex items-center gap-2">
-                  <Layers className="w-5 h-5" />
-                  SYSTEM_METRICS
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-cyan-500/10 rounded border border-cyan-500/30">
-                    <div className="text-3xl font-mono text-cyan-400 mb-1">1+</div>
-                    <div className="text-xs text-slate-400">YEAR EXPERIENCE</div>
-                  </div>
-                  <div className="text-center p-4 bg-blue-500/10 rounded border border-blue-500/30">
-                    <div className="text-3xl font-mono text-blue-400 mb-1">10+</div>
-                    <div className="text-xs text-slate-400">PROJECTS</div>
-                  </div>
-                  <div className="text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30">
-                    <div className="text-3xl font-mono text-emerald-400 mb-1">5+</div>
-                    <div className="text-xs text-slate-400">TECH STACKS</div>
-                  </div>
-                  <div className="text-center p-4 bg-green-500/10 rounded border border-green-500/30">
-                    <div className="text-3xl font-mono text-green-400 mb-1">100%</div>
-                    <div className="text-xs text-slate-400">DEDICATION</div>
-                  </div>
-                </div>
-              </HexagonCard>
-
-              <HexagonCard delay={0.6}>
-                <h3 className="font-mono text-xl text-cyan-400 mb-4 flex items-center gap-2">
-                  <Zap className="w-5 h-5" />
-                  LANGUAGES
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between mb-2 text-sm">
-                      <span>Urdu</span>
-                      <span className="text-cyan-400 font-mono">Native</span>
-                    </div>
-                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full w-full bg-gradient-to-r from-cyan-500 to-blue-500" />
-                    </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-1 min-w-[220px] items-center gap-3 rounded-3xl border border-[#cde6c8] bg-[#edf7ec] px-4 py-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[20px] bg-white text-lg font-semibold text-[#1f7a3f]">
+                    3.5
                   </div>
                   <div>
-                    <div className="flex justify-between mb-2 text-sm">
-                      <span>English</span>
-                      <span className="text-cyan-400 font-mono">Conversational</span>
-                    </div>
-                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full w-4/5 bg-gradient-to-r from-cyan-500 to-blue-500" />
-                    </div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-[#8fa191]">口コミ</p>
+                    <p className="text-sm font-medium text-[#273b2c]">レビュー 128件</p>
                   </div>
                 </div>
-              </HexagonCard>
+                <p className="text-xs text-[#93a49a]">更新日 2025.05.12</p>
+              </div>
 
-              <HexagonCard delay={0.7}>
-                <h3 className="font-mono text-xl text-cyan-400 mb-4">HOBBIES</h3>
-                <p className="text-sm text-slate-300">
-                  Browsing about latest online technological methods and staying updated 
-                  with cutting-edge developments in software engineering.
-                </p>
-              </HexagonCard>
+              <div className="grid grid-cols-2 gap-3">
+                {actionButtons.map((button) => (
+                  <button
+                    key={button.label}
+                    className={`rounded-2xl border px-4 py-2 text-sm font-medium tracking-[0.08em] transition-colors ${
+                      button.primary
+                        ? "border-[#1f7a3f] bg-[#1f7a3f] text-white hover:bg-[#196437]"
+                        : "border-[#dbe8d7] bg-white text-[#2a3c2f] hover:bg-[#f2f7f1]"
+                    }`}
+                  >
+                    {button.label}
+                  </button>
+                ))}
+              </div>
+
+              <p className="text-sm leading-relaxed text-[#526456]">
+                赤坂の中心にある落ち着いた大人の隠れ家。明るいママとキャストが、
+                初めての方にも丁寧にご案内いたします。季節のカクテルとともに、
+                ゆったりとした時間をお過ごしください。
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Skills Section */}
-      <section id="skills" className="min-h-screen flex items-center justify-center px-4 py-20">
-        <div className="max-w-7xl mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <h2 className="text-4xl md:text-6xl font-mono mb-4 text-cyan-400">
-              {'<'} TECH_STACK {'>'}
-            </h2>
-            <div className="h-1 w-32 bg-gradient-to-r from-cyan-500 to-transparent" />
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Languages */}
-            <HexagonCard delay={0.1}>
-              <div className="mb-4 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded flex items-center justify-center">
-                  <Code2 className="w-6 h-6 text-white" />
+            <div className="flex-1 space-y-4">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[28px]">
+                <img
+                  src={galleryImages[0]}
+                  alt="店内の様子"
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 text-xs font-medium text-[#1f3625]">
+                  <span className="size-2 rounded-full bg-[#60b184]" />
+                  PHOTO GALLERY
                 </div>
-                <h3 className="font-mono text-lg text-cyan-400">LANGUAGES</h3>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {skills.languages.map((skill) => (
-                  <Badge key={skill} className="bg-slate-800 border-cyan-500/30 text-cyan-400 font-mono text-xs">
-                    {skill}
-                  </Badge>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+                {galleryImages.slice(1).map((image, index) => (
+                  <div
+                    key={image}
+                    className="group relative h-20 overflow-hidden rounded-2xl border border-[#dbe8d7]"
+                  >
+                    <img
+                      src={image}
+                      alt={`店内サムネイル ${index + 1}`}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
                 ))}
               </div>
-            </HexagonCard>
+            </div>
+          </section>
 
-            {/* Web Development */}
-              <HexagonCard delay={0.2}>
-              <div className="mb-4 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center">
-                  <Layers className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="font-mono text-lg text-cyan-400">WEB_DEV</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {skills.web.map((skill) => (
-                  <Badge key={skill} className="bg-slate-800 border-cyan-500/30 text-cyan-400 font-mono text-xs">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </HexagonCard>
+          <Divider />
 
-            {/* Tools */}
-            <HexagonCard delay={0.3}>
-              <div className="mb-4 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded flex items-center justify-center">
-                  <Terminal className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="font-mono text-lg text-cyan-400">TOOLS</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {skills.tools.map((skill) => (
-                  <Badge key={skill} className="bg-slate-800 border-emerald-500/30 text-emerald-400 font-mono text-xs">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </HexagonCard>
-
-            {/* Other */}
-            <HexagonCard delay={0.5} className="md:col-span-2">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded flex items-center justify-center">
-                  <Cpu className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="font-mono text-lg text-cyan-400">ADDITIONAL</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {skills.other.map((skill) => (
-                  <Badge key={skill} className="bg-slate-800 border-orange-500/30 text-orange-400 font-mono text-xs">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </HexagonCard>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="min-h-screen flex items-center justify-center px-4 py-20">
-        <div className="max-w-7xl mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <h2 className="text-4xl md:text-6xl font-mono mb-4 text-cyan-400">
-              {'<'} PROJECT_FILES {'>'}
-            </h2>
-            <div className="h-1 w-32 bg-gradient-to-r from-cyan-500 to-transparent" />
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project, index) => (
-              <div key={project.title}>
-              <HexagonCard delay={0.1 * (index + 1)}>
-                <div className="mb-4 flex items-center justify-between">
-                  <Badge className={`font-mono text-xs ${
-                    project.status === "Ongoing" 
-                      ? "bg-yellow-500/20 border-yellow-500/50 text-yellow-400"
-                      : "bg-green-500/20 border-green-500/50 text-green-400"
-                  }`}>
-                    {project.status}
-                  </Badge>
-                  <ExternalLink className="w-4 h-4 text-cyan-400 opacity-50 hover:opacity-100 cursor-pointer transition-opacity" />
-                </div>
-
-                <h3 className="font-mono text-lg text-cyan-400 mb-3">
-                  {project.title}
-                </h3>
-
-                <p className="text-sm text-slate-300 mb-4 leading-relaxed">
-                  {project.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((tech) => (
-                    <Badge key={tech} className="bg-slate-800/50 border-cyan-500/20 text-cyan-400 font-mono text-xs">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              </HexagonCard>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="min-h-screen flex items-center justify-center px-4 py-20">
-        <div className="max-w-4xl mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <h2 className="text-4xl md:text-6xl font-mono mb-4 text-cyan-400">
-              {'<'} INITIALIZE_CONTACT {'>'}
-            </h2>
-            <div className="h-1 w-32 bg-gradient-to-r from-cyan-500 to-transparent mx-auto mb-6" />
-            <p className="text-slate-400 font-mono">
-              Ready to build something amazing? Let's connect.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Contact Form */}
-            <HexagonCard delay={0.2}>
-              <h3 className="font-mono text-xl text-cyan-400 mb-6">SEND_MESSAGE</h3>
-              <form className="space-y-4">
-                <div>
-                  <label className="font-mono text-xs text-cyan-400 mb-2 block">NAME</label>
-                  <Input 
-                    placeholder="Enter your name"
-                    className="bg-slate-800/50 border-cyan-500/30 text-white font-mono focus:border-cyan-400"
-                  />
-                </div>
-                <div>
-                  <label className="font-mono text-xs text-cyan-400 mb-2 block">EMAIL</label>
-                  <Input 
-                    type="email"
-                    placeholder="your@email.com"
-                    className="bg-slate-800/50 border-cyan-500/30 text-white font-mono focus:border-cyan-400"
-                  />
-                </div>
-                <div>
-                  <label className="font-mono text-xs text-cyan-400 mb-2 block">MESSAGE</label>
-                  <Textarea 
-                    placeholder="Your message..."
-                    rows={4}
-                    className="bg-slate-800/50 border-cyan-500/30 text-white font-mono focus:border-cyan-400 resize-none"
-                  />
-                </div>
-                <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-mono">
-                  TRANSMIT_MESSAGE
-                </Button>
-              </form>
-            </HexagonCard>
-
-            {/* Contact Info & Links */}
-            <div className="space-y-6">
-              <HexagonCard delay={0.3}>
-                <h3 className="font-mono text-xl text-cyan-400 mb-4">DIRECT_CHANNELS</h3>
-                <div className="space-y-3">
-                  <a 
-                    href="mailto:balochanas321@gmail.com"
-                    className="flex items-center gap-3 p-3 bg-slate-800/30 rounded border border-cyan-500/20 hover:border-cyan-500/50 transition-colors group"
-                  >
-                    <Mail className="w-5 h-5 text-cyan-400" />
-                    <div>
-                      <div className="text-xs text-slate-400 font-mono">EMAIL</div>
-                      <div className="text-sm group-hover:text-cyan-400 transition-colors">balochanas321@gmail.com</div>
-                    </div>
-                  </a>
-                  <a 
-                    href="tel:03366768725"
-                    className="flex items-center gap-3 p-3 bg-slate-800/30 rounded border border-cyan-500/20 hover:border-cyan-500/50 transition-colors group"
-                  >
-                    <Phone className="w-5 h-5 text-cyan-400" />
-                    <div>
-                      <div className="text-xs text-slate-400 font-mono">PHONE</div>
-                      <div className="text-sm group-hover:text-cyan-400 transition-colors">03366768725</div>
-                    </div>
-                  </a>
-                </div>
-              </HexagonCard>
-
-              <HexagonCard delay={0.4}>
-                <h3 className="font-mono text-xl text-cyan-400 mb-4">SOCIAL_LINKS</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <a 
-                    href="https://github.com/anasbalochh"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 p-3 bg-slate-800/30 rounded border border-cyan-500/20 hover:border-cyan-500/50 transition-all hover:scale-105 group"
-                  >
-                    <Github className="w-5 h-5 text-cyan-400 group-hover:text-white transition-colors" />
-                    <span className="text-sm font-mono">GitHub</span>
-                  </a>
-                  <a 
-                    href="https://www.linkedin.com/in/muhammad-anas-084225331?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 p-3 bg-slate-800/30 rounded border border-cyan-500/20 hover:border-cyan-500/50 transition-all hover:scale-105 group"
-                  >
-                    <Linkedin className="w-5 h-5 text-cyan-400 group-hover:text-white transition-colors" />
-                    <span className="text-sm font-mono">LinkedIn</span>
-                  </a>
-                </div>
-              </HexagonCard>
-
-              <HexagonCard delay={0.5}>
-                <div className="text-center p-4">
-                  <div className="font-mono text-sm text-cyan-400 mb-2">SYSTEM_STATUS</div>
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-                    <span className="text-green-400 font-mono">AVAILABLE FOR PROJECTS</span>
+          <section className="space-y-6">
+            <SectionHeading title="ママ・キャスト" note="STAFF" />
+            <div className="flex flex-wrap gap-6">
+              {staffMembers.map((member) => (
+                <div key={member.name} className="flex flex-col items-center gap-3">
+                  <div className="relative h-20 w-20 overflow-hidden rounded-full border-4 border-[#f2f7ef] shadow-[0_10px_25px_rgba(26,42,33,0.1)]">
+                    <img src={member.image} alt={member.name} className="h-full w-full object-cover" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-[#203427]">{member.name}</p>
+                    <p className="text-xs uppercase tracking-[0.4em] text-[#92a298]">{member.role}</p>
                   </div>
                 </div>
-              </HexagonCard>
+              ))}
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      {/* Footer */}
-      <footer className="py-8 px-4 border-t border-cyan-500/20">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="font-mono text-sm text-slate-400">
-            © 2025 MUHAMMAD_ANAS | POWERED_BY_INNOVATION
-          </p>
-          <p className="font-mono text-xs text-slate-500 mt-2">
-            Built with React + TypeScript + Tailwind CSS + Motion
-          </p>
+          <Divider />
+
+          <section className="space-y-8">
+            <SectionHeading title="店舗基本情報" note="BASIC INFORMATION" />
+            <div className="grid gap-10 lg:grid-cols-5">
+              <InfoCard
+                title="店舗基本情報"
+                note="DETAILS"
+                rows={basicInfo}
+                className="lg:col-span-3"
+              />
+              <div className="space-y-10 lg:col-span-2">
+                <InfoCard title="料金・設備" note="SERVICE" rows={facilityInfo} />
+                <InfoCard title="求人・店舗" note="RECRUIT" rows={recruitInfo} />
+              </div>
+            </div>
+          </section>
+
+          <section className="space-y-6">
+            <SectionHeading title="データ" note="HIGHLIGHTS" />
+            <div className="grid gap-4 md:grid-cols-3">
+              {dataHighlights.map((item) => (
+                <div
+                  key={item.tag}
+                  className="rounded-2xl border border-[#d4e4d2] bg-[#f3f8f0] p-5 shadow-[0_14px_30px_rgba(24,39,29,0.08)]"
+                >
+                  <p className="text-xs uppercase tracking-[0.4em] text-[#8fa191]">{item.tag}</p>
+                  <h3 className="mt-3 text-lg font-semibold text-[#1c3322]">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#576759]">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-6">
+            <SectionHeading title="クーポン" note="COUPON" />
+            <div className="grid gap-4 md:grid-cols-2">
+              {coupons.map((coupon) => (
+                <div
+                  key={coupon.code}
+                  className="relative overflow-hidden rounded-3xl border border-[#124739] bg-gradient-to-br from-[#195646] via-[#0f4437] to-[#09372c] p-6 text-white shadow-[0_22px_45px_rgba(10,40,33,0.45)]"
+                >
+                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.4em] text-white/60">
+                    <span>COUPON</span>
+                    <span>{coupon.expiry}</span>
+                  </div>
+                  <h3 className="mt-4 text-2xl font-semibold">{coupon.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-white/80">{coupon.description}</p>
+                  <div className="mt-6 flex items-center justify-between gap-3">
+                    <span className="rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs tracking-[0.4em]">
+                      {coupon.code}
+                    </span>
+                    <button className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#0e4638] transition-colors hover:bg-[#f2f2f2]">
+                      予約する
+                    </button>
+                  </div>
+                  <span className="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-white/20 opacity-30" />
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }
 
-function TerminalLine({ 
-  children, 
-  delay = 0, 
-  isOutput = false 
-}: { 
-  children?: React.ReactNode; 
-  delay?: number; 
-  isOutput?: boolean; 
+function SectionHeading({ title, note }: { title: string; note?: string }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <span className="h-px w-8 rounded-full bg-[#9dc6a2]" />
+        <span className="text-xs uppercase tracking-[0.4em] text-[#8fa191]">{note}</span>
+      </div>
+      <h2 className="text-xl font-semibold tracking-wide text-[#1b3123]">{title}</h2>
+    </div>
+  );
+}
+
+function InfoCard({
+  title,
+  note,
+  rows,
+  className,
+}: {
+  title: string;
+  note?: string;
+  rows: InfoRow[];
+  className?: string;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay, duration: 0.3 }}
-      className={isOutput ? 'text-slate-400' : 'text-cyan-400'}
+    <div
+      className={`rounded-3xl border border-[#dce6d8] bg-[#fbfdfb] shadow-[0_16px_40px_rgba(24,39,29,0.08)] ${
+        className ?? ""
+      }`}
     >
-      {children}
-    </motion.div>
+      <div className="border-b border-[#e5ede1] bg-[#f4f9f0] px-6 py-5">
+        <p className="text-xs uppercase tracking-[0.4em] text-[#8fa191]">{note}</p>
+        <h3 className="mt-2 text-lg font-semibold text-[#1b3123]">{title}</h3>
+      </div>
+      <dl className="divide-y divide-[#ecf2e8]">
+        {rows.map((row) => (
+          <div
+            key={row.label}
+            className="grid grid-cols-1 gap-2 px-6 py-4 md:grid-cols-[140px_1fr]"
+          >
+            <dt className="text-xs uppercase tracking-[0.32em] text-[#9aa89f] md:pt-1">{row.label}</dt>
+            <dd
+              className={`text-sm leading-relaxed text-[#263a2c] ${
+                row.alignTop ? "md:self-start" : ""
+              }`}
+            >
+              {row.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
+}
+
+function Divider() {
+  return <div className="border-t border-dashed border-[#dde6d8]" />;
 }
